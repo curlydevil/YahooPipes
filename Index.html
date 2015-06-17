@@ -38,14 +38,14 @@
   </div>
 
   <script>
-    var asyncGet = function(requestUrl, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', requestUrl, true);
-      xhr.onload = function(e) {
-        callback(xhr);
-      };
-      xhr.send(null);
-      return xhr;
+    var dataLoadedCallback = function(data) {
+      var htmlCode = parsePipesRespone(data);
+
+      var placeToInsert = document.getElementById("data-host");
+      placeToInsert.innerHTML = htmlCode;
+
+      var pageMotto = document.getElementById("page-motto");
+      pageMotto.innerHTML = '<p>Top ' + data.count + ' news from "' + data.value.title + '" pipe!</p>'
     }
 
     var composePipeElement = function(id, image, title, link, description) {
@@ -75,29 +75,12 @@
       return divsArray;
     }
 
-    var dataLoadedCallback = function(pipesNews) {
-      if (pipesNews.status == '200') {
-        var responseObject = JSON.parse(pipesNews.response);
-        var htmlCode = parsePipesRespone(responseObject);
-        var placeToInsert = document.getElementById("data-host");
-        placeToInsert.innerHTML = htmlCode;
-
-        var pageMotto = document.getElementById("page-motto");
-        pageMotto.innerHTML = '<p>Top ' + responseObject.count + ' news from "' + responseObject.value.title + '" pipe!</p>'
-      }
-    }
-
-    var load = function() {
-      asyncGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json', dataLoadedCallback);
-    }
-
     var show = function(id) {
       var element = document.getElementById(id);
       element.style.display = 'block';
     }
-
-    load();
   </script>
+  <script src="http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json&_callback=dataLoadedCallback"></script>
 </body>
 
 </html>
