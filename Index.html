@@ -45,6 +45,14 @@
       return xhr;
     }
 
+	var asyncGet = function(requestUrl, callback){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', requestUrl, true);
+	  xhr.onload = function(e){ callback(xhr);};
+      xhr.send(null);
+      return xhr;
+	}
+	
     var composePipeElement = function(id, image, title, link, description) {
       var htmlElementCode = '<div style="background-image:url(' + image + ')" class="well table-row bg-cover">'
       htmlElementCode += '<div class="vcenter table-cell">';
@@ -73,8 +81,8 @@
     }
 
     var load = function() {
-      var pipesNews = httpGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json');
-      if (pipesNews.status == '200') {
+      asyncGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json', function(pipesNews){
+	  if (pipesNews.status == '200') {
         var responseObject = JSON.parse(pipesNews.response);
         var htmlCode = parsePipesRespone(responseObject);
         var placeToInsert = document.getElementById("data-host");
@@ -83,6 +91,8 @@
         var pageMotto = document.getElementById("page-motto");
         pageMotto.innerHTML = '<p>Top ' + responseObject.count + ' news from "' + responseObject.value.title + '" pipe!</p>'
       }
+	  });
+      
     }
 
     var show = function(id) {
