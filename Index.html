@@ -75,18 +75,20 @@
       return divsArray;
     }
 
-    var load = function() {
-      asyncGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json', function(pipesNews) {
-        if (pipesNews.status == '200') {
-          var responseObject = JSON.parse(pipesNews.response);
-          var htmlCode = parsePipesRespone(responseObject);
-          var placeToInsert = document.getElementById("data-host");
-          placeToInsert.innerHTML = htmlCode;
+    var dataLoadedCallback = function(pipesNews) {
+      if (pipesNews.status == '200') {
+        var responseObject = JSON.parse(pipesNews.response);
+        var htmlCode = parsePipesRespone(responseObject);
+        var placeToInsert = document.getElementById("data-host");
+        placeToInsert.innerHTML = htmlCode;
 
-          var pageMotto = document.getElementById("page-motto");
-          pageMotto.innerHTML = '<p>Top ' + responseObject.count + ' news from "' + responseObject.value.title + '" pipe!</p>'
-        }
-      });
+        var pageMotto = document.getElementById("page-motto");
+        pageMotto.innerHTML = '<p>Top ' + responseObject.count + ' news from "' + responseObject.value.title + '" pipe!</p>'
+      }
+    }
+
+    var load = function() {
+      asyncGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json', dataLoadedCallback);
     }
 
     var show = function(id) {
