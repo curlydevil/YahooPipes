@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Yahoo Pipes: Top 10 news!</title>
+  <link data-require="bootstrap-css@*" data-semver="3.3.1" rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+  <style>
+    .thumbnail {
+      max-width: 128px;
+      max-height: 100%;
+    }
+    
+    .vcenter {
+      display: inline-block;
+      vertical-align: middle;
+      float: none;
+    }
+    
+    .table-cell {
+      padding: 0px 10px;
+    }
+    
+    .bg-cover {
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+
+<body class="container">
+  <div id="content-container">
+    <header>
+      <h1 id="page-motto" class="well text-center"></h1>
+    </header>
+    <section class="jumbotron">
+      <div id="data-host" class="content"></div>
+    </section>
+  </div>
+
+  <script>
+    var httpGet = function(theUrl) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', theUrl, false);
+      xhr.send();
+      return xhr;
+    }
+
+    var composePipeElement = function(id, image, title, link, description) {
+      var htmlElementCode = '<div style="background-image:url(' + image + ')" class="well table-row bg-cover">'
+      htmlElementCode += '<div class="vcenter table-cell">';
+      htmlElementCode += '<a class="thumbnail" href="' + image + '" target="_blank">';
+      htmlElementCode += '<img src="' + image + '" title="Click to open full size image in new window">';
+      htmlElementCode += '</a>';
+      htmlElementCode += '<a onclick="show(' + id + ')">';
+      htmlElementCode += '<p class="vcenter table-cell well">' + title + '</p></a>';
+      htmlElementCode += '<p id="' + id + '" class="vcenter table-cell well" style="display: none">' + description;
+      htmlElementCode += '<br/><a href="' + link + '" target="_blank">More info</a></p>'
+      htmlElementCode += '</div></div>';
+      return htmlElementCode;
+    }
+
+    var parsePipesRespone = function(data) {
+      var divsArray = '';
+      for (var i = 0; i < data.count; i++) {
+        var imageUrl = data.value.items[i].enclosure.url;
+        var title = data.value.items[i].title;
+        var link = data.value.items[i].link;
+        var description = data.value.items[i].description;
+        var newsCode = composePipeElement(i, imageUrl, title, link, description);
+        divsArray += newsCode;
+      }
+      return divsArray;
+    }
+
+    var load = function() {
+      var pipesNews = httpGet('http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json');
+      if (pipesNews.status == '200') {
+        var responseObject = JSON.parse(pipesNews.response);
+        var htmlCode = parsePipesRespone(responseObject);
+        var placeToInsert = document.getElementById("data-host");
+        placeToInsert.innerHTML = htmlCode;
+
+        var pageMotto = document.getElementById("page-motto");
+        pageMotto.innerHTML = '<p>Top ' + responseObject.count + ' news from "' + responseObject.value.title + '" pipe!</p>'
+      }
+    }
+
+    var show = function(id) {
+      var element = document.getElementById(id);
+      element.style.display = 'block';
+    }
+
+    load();
+  </script>
+</body>
+
+</html>
