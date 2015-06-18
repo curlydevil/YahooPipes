@@ -77,10 +77,20 @@
 
     var show = function(id) {
       var element = document.getElementById(id);
-      element.style.display = 'block';
+	  if(element !== null)
+		element.style.display = 'block';
     }
+	
+	var load = function(){
+		var script = document.createElement( 'script' );
+		script.src = 'http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json&_callback=dataLoadedCallback';
+		var bodyTag = document.getElementsByTagName( 'body' )[0];
+		bodyTag.appendChild( script );
+	}
+	
+	load();
+	
   </script>
-  <script src="http://pipes.yahoo.com/pipes/pipe.run?_id=e9a2e77dffb3205d035c4e311d77bbe6&_render=json&_callback=dataLoadedCallback"></script>
 </body>
 
 </html>
